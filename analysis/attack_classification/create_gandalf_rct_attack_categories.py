@@ -36,7 +36,7 @@ def main():
 
     Also adds embeddings to the dataset.
     """
-    all_data = load_dataset("Lakera/gandalf-trial-data")["trial"].to_pandas()
+    all_data = load_dataset("Lakera/gandalf-rct")["trial"].to_pandas()
 
     print("Extracting last attempt for each (level, user), this takes ~30s")
     df = get_last_attempt_for_df(all_data)

@@ -18,7 +18,7 @@ from collections import defaultdict
 import tqdm.auto
 from datasets import Dataset, Features, IterableDataset, load_dataset
 
-from analysis.attack_classification.embedding_utils import add_embeddings_column
+from analysis.embedding_utils import add_embeddings_column
 
 N_SAMPLES_PER_LEVEL = 1000
 # The lower this limit is, the higher the diversity of the data should be
@@ -114,7 +114,7 @@ def sample_equally_from_levels(ds: Dataset, samples_per_level: int):
 
 
 def main():
-    ds = load_dataset("Lakera/gandalf-trial-data")["trial"]
+    ds = load_dataset("Lakera/gandalf-rct")["trial"]
     # Can't get embeddings for empty prompts
     ds = ds.filter(lambda x: x["prompt"] != "" and x["kind"] == "prompt")
 
