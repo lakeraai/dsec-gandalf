@@ -1,0 +1,16 @@
+matplotlib
+pandas
+seaborn
+datasets>=2.19.2
+tabulate
+jinja2
+openai>=1.54.4
+tqdm
+ruamel.yaml>=0.17.40
+plotly>=5.24.1
+diskcache
+scikit-learn>=1.5.2
+matplotlib-venn
+matplotlib_set_diagrams
+statannotations
+kaleido
