@@ -1,10 +1,10 @@
-import hashlib
 from pathlib import Path
 from typing import Literal
 
 import pandas as pd
-from datasets import load_dataset
 from ruamel.yaml import YAML
+
+from data import load_rct_subsampled
 
 from ..utils import compute_text_hash
 
@@ -38,8 +38,7 @@ class ActiveLearningDataset:
         self.df = self.load_labels()
 
     def load_labels(self) -> pd.DataFrame:
-        ds = load_dataset("Lakera/gandalf-rct-subsampled")["train"]
-        df = ds.to_pandas()
+        df = load_rct_subsampled()
         # deduplicate texts
         df = df.drop_duplicates(subset="prompt")
 

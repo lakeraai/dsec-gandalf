@@ -87,12 +87,11 @@ def load_trial_data() -> pd.DataFrame:
     return datasets.load_dataset("Lakera/gandalf-rct")["trial"].to_pandas()
 
 
-def load_benign_data(key: Literal["BasicUser", "BorderlineUser"] = "BasicUser",
-                     use_autodan: bool = True) -> pd.DataFrame:
+def load_benign_data(
+    key: Literal["BasicUser", "BorderlineUser"] = "BasicUser", use_autodan: bool = True
+) -> pd.DataFrame:
     """Loads and preprocesses benign user data"""
-    df = datasets.load_dataset("Lakera/gandalf-rct-user")[
-        key
-    ].to_pandas()
+    df = datasets.load_dataset("Lakera/gandalf-rct-user")[key].to_pandas()
 
     # assign a prompt id to unique prompts to compare across levels
     df["prompt_id"] = pd.factorize(df["prompt"])[0]
@@ -106,7 +105,7 @@ def load_benign_data(key: Literal["BasicUser", "BorderlineUser"] = "BasicUser",
         lambda x: x["password"] in x["raw_answer"], axis=1
     )
     df["password_in_output_subtle_raw"] = (
-            df["password_in_output_raw"] & ~df["password_in_output_exact_raw"]
+        df["password_in_output_raw"] & ~df["password_in_output_exact_raw"]
     )
 
     df["password_in_output"] = df.apply(
@@ -116,7 +115,7 @@ def load_benign_data(key: Literal["BasicUser", "BorderlineUser"] = "BasicUser",
         lambda x: x["password"] in x["answer"], axis=1
     )
     df["password_in_output_subtle"] = (
-            df["password_in_output"] & ~df["password_in_output_exact"]
+        df["password_in_output"] & ~df["password_in_output_exact"]
     )
 
     # check if response is a denial response
@@ -124,20 +123,27 @@ def load_benign_data(key: Literal["BasicUser", "BorderlineUser"] = "BasicUser",
 
     # add a flag if the prompt_id was BLOCKED in level A
     level_a_blocks = df[(df["defense"] == "A") & df["blocked"]][["llm", "prompt_id"]]
-    level_a_blocks_set = set(zip(level_a_blocks['llm'], level_a_blocks['prompt_id']))
-    df['is_level_a_block'] = df.apply(
-        lambda row: (row['llm'], row['prompt_id']) in level_a_blocks_set, axis=1)
+    level_a_blocks_set = set(zip(level_a_blocks["llm"], level_a_blocks["prompt_id"]))
+    df["is_level_a_block"] = df.apply(
+        lambda row: (row["llm"], row["prompt_id"]) in level_a_blocks_set, axis=1
+    )
 
     # add a flag if the password was REVEALED in ANY level but A
-    reveal_exact = df[(df["defense"] != "A") & df["password_in_output_exact"]][["llm", "prompt_id"]]
-    reveal_exact_set = set(zip(reveal_exact['llm'], reveal_exact['prompt_id']))
-    df['is_reveal_exact'] = df.apply(
-        lambda row: (row['llm'], row['prompt_id']) in reveal_exact_set, axis=1)
+    reveal_exact = df[(df["defense"] != "A") & df["password_in_output_exact"]][
+        ["llm", "prompt_id"]
+    ]
+    reveal_exact_set = set(zip(reveal_exact["llm"], reveal_exact["prompt_id"]))
+    df["is_reveal_exact"] = df.apply(
+        lambda row: (row["llm"], row["prompt_id"]) in reveal_exact_set, axis=1
+    )
 
-    level_a_reveal = df[(df["defense"] != "A") & df["password_in_output"]][["llm", "prompt_id"]]
-    level_a_reveal_set = set(zip(level_a_reveal['llm'], level_a_reveal['prompt_id']))
-    df['is_reveal'] = df.apply(
-        lambda row: (row['llm'], row['prompt_id']) in level_a_reveal_set, axis=1)
+    level_a_reveal = df[(df["defense"] != "A") & df["password_in_output"]][
+        ["llm", "prompt_id"]
+    ]
+    level_a_reveal_set = set(zip(level_a_reveal["llm"], level_a_reveal["prompt_id"]))
+    df["is_reveal"] = df.apply(
+        lambda row: (row["llm"], row["prompt_id"]) in level_a_reveal_set, axis=1
+    )
 
     return df
 
@@ -153,4 +159,14 @@ def load_adaptive_defense_experiment() -> pd.DataFrame:
     repo_name = "Lakera/gandalf-rct-ad"
     df = datasets.load_dataset(repo_name)["adaptive_defense_experiment"].to_pandas()
     df["blocked"] = df["answer"].map(lambda x: _is_block_response(x, True))
+    return df
+
+
+def load_rct_subsampled() -> pd.DataFrame:
+    df = datasets.load_dataset("Lakera/gandalf-rct-subsampled")["train"].to_pandas()
+    return df
+
+
+def load_rct_attackcategories() -> pd.DataFrame:
+    df = datasets.load_dataset("Lakera/gandalf-rct-attack-categories")["train"].to_pandas()
     return df

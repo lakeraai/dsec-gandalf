@@ -1,6 +1,7 @@
 import pandas as pd
 import tqdm.auto
-from datasets import load_dataset
+
+from data import load_rct_attackcategories
 
 from .active_learning import ActiveLearningDataset, train_model
 
@@ -60,8 +61,7 @@ def get_df_with_categories(base_df: pd.DataFrame | None = None) -> pd.DataFrame:
     if base_df is None:
         # A bit redundant because this dataset already has attack categories,
         # but can be useful if we change the classifiers.
-        ds = load_dataset("Lakera/gandalf-rct-attack-categories")["train"]
-        df = ds.to_pandas()
+        df = load_rct_attackcategories()
     else:
         df = base_df.copy()
 
